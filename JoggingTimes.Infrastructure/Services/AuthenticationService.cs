@@ -24,7 +24,7 @@ namespace Jogging_Times.Infrastructure.Services
         private readonly Jwt _jwt;
 
         public AuthenticationService(UserManager<ApplicationUser> userManager,
-            IMapper mapper, IOptions<Jwt> jwt, IPasswordHasher<ApplicationUser> passwordHasher, 
+            IMapper mapper, IOptions<Jwt> jwt, IPasswordHasher<ApplicationUser> passwordHasher,
             IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
@@ -44,7 +44,7 @@ namespace Jogging_Times.Infrastructure.Services
             return result;
         }
 
-        public async Task<ResponseAuthDto> RegisterUserAsync(RegisterUserDto registerUserDto,string role)
+        public async Task<ResponseAuthDto> RegisterUserAsync(RegisterUserDto registerUserDto, string role)
         {
             if (await _userManager.FindByEmailAsync(registerUserDto.Email) is not null)
                 return new ResponseAuthDto { Message = ResponseMessage.EmailErrorMessage };
@@ -52,7 +52,7 @@ namespace Jogging_Times.Infrastructure.Services
             if (await _userManager.FindByNameAsync(registerUserDto.UserName) is not null)
                 return new ResponseAuthDto { Message = ResponseMessage.UserNameErrorMessage };
 
-            var loggedUserRole = GetClaimsAsync();
+            var loggedUserRole = GetUserRole();
 
             if (loggedUserRole == UserRoles.UserManager && role == UserRoles.Admin)
                 return new ResponseAuthDto { Message = ResponseMessage.RegisterRoleErrorMessage };
@@ -186,7 +186,7 @@ namespace Jogging_Times.Infrastructure.Services
             return jwtSecurityToken;
         }
 
-        private string GetClaimsAsync()
+        private string GetUserRole()
         {
             // Retrieve the current user's identity from the HttpContext
             ClaimsIdentity identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
@@ -195,7 +195,7 @@ namespace Jogging_Times.Infrastructure.Services
             if (identity != null && identity.IsAuthenticated)
             {
                 // Retrieve the user's role from the identity
-                  role += identity.FindFirst(ClaimTypes.Role)?.Value;
+                role += identity.FindFirst(ClaimTypes.Role)?.Value;
             }
             return role;
         }

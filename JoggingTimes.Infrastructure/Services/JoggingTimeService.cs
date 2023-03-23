@@ -108,7 +108,7 @@ namespace Jogging_Times.Infrastructure.Services
                 return new JoggingTimeDetailsDto { Message = ResponseMessage.joggingNotFoundMessage };
 
             var joggingTime = _mapper.Map<JoggingTime>(updatejoggingTimeDto);
-            
+
             joggingTime.UserId += GetCurrentUserId();
 
             _context.Entry(joggingTimeExist).CurrentValues.SetValues(joggingTime);

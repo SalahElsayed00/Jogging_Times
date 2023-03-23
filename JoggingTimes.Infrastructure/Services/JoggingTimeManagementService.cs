@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace JoggingTimes.Infrastructure.Services
 {
-    public class JoggingTimeManagementService:IjoggingTimeManagementService
+    public class JoggingTimeManagementService : IjoggingTimeManagementService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;

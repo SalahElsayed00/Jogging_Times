@@ -23,6 +23,5 @@
         public const string JoggingTimeIdRequiredErrorMessage = "Jogging time Id required!";
         public const string joggingNotFoundMessage = "There is no jogging time by this id !";
         public const string DeleteJoggingtoanotheruserErrorMessage = "You Don't have permession to remove jog times of another user!";
-
     }
 }

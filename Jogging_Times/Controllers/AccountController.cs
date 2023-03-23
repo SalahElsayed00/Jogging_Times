@@ -19,14 +19,14 @@ namespace Jogging_Times.Controllers
         {
             _authService = authService;
         }
-        
+
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterUserDto registerUserDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authService.RegisterUserAsync(registerUserDto,UserRoles.RegularUser);
+            var result = await _authService.RegisterUserAsync(registerUserDto, UserRoles.RegularUser);
 
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
