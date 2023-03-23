@@ -26,11 +26,6 @@ namespace Jogging_Times.Core.Validation
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("Date is required");
-
-            RuleFor(x => x.UserId)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("User Id is required");
         }
     }
 }

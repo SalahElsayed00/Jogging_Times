@@ -1,21 +1,21 @@
 ﻿using FluentValidation;
-using Jogging_Times.Core.DTOs.JoggingTimesDto;
+using Jogging_Times.Core.DTOs.JoggingTimeMangementDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jogging_Times.Core.Validation
+namespace Jogging_Times.Core.Validation.JoggingTimeManagementDtoValidation
 {
-    public class UpdateJoggingTimeDtoValidation:AbstractValidator<UpdateJoggingTimeDto>
+    public class JoggingTimeManagementDtoValidation:AbstractValidator<JoggingTimeManagementDto>
     {
-        public UpdateJoggingTimeDtoValidation()
+        public JoggingTimeManagementDtoValidation()
         {
-            RuleFor(x => x.Id)
+            RuleFor(x => x.UserId)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("id is required");
+                .WithMessage("User Id is required");
 
             RuleFor(x => x.Distance)
                 .NotNull()

@@ -13,7 +13,7 @@
         public const string ErrorDeleteUserMessage = "An error accurred while deletion the user !";
         public const string SuccessDeleteUserMessage = "Deleted User successfully !";
         public const string RequiredUserIdMessage = "User Id Is required !";
-        public const string RegisterRoleErrorMessage = "Don't have permession to create Admin!";
+        public const string RegisterRoleErrorMessage = "You Don't have permession to create Admin!";
         public const string RoleExistMessage = "This user already has this role !";
         public const string JoggingErrorMessage = "There is no jogging time to shown !";
         public const string JoggingNullErrorMessage = "please enter your jogging time";
@@ -22,6 +22,7 @@
         public const string JoggingTimeUpdatedMessage = "Jogging time updated succesfully!";
         public const string JoggingTimeIdRequiredErrorMessage = "Jogging time Id required!";
         public const string joggingNotFoundMessage = "There is no jogging time by this id !";
+        public const string DeleteJoggingtoanotheruserErrorMessage = "You Don't have permession to remove jog times of another user!";
 
     }
 }

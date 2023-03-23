@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jogging_Times.Core.Validation
+namespace Jogging_Times.Core.Validation.JoggingTimeValidation
 {
     public class UpdateJoggingTimeDtoValidation:AbstractValidator<UpdateJoggingTimeDto>
     {
@@ -15,7 +15,7 @@ namespace Jogging_Times.Core.Validation
             RuleFor(x => x.Id)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("id is required");
+                .WithMessage("Id is required");
 
             RuleFor(x => x.Distance)
                 .NotNull()

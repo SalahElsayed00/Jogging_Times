@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Jogging_Times.Core.Const;
+using Jogging_Times.Core.DTOs.JoggingTimeMangementDto;
 using Jogging_Times.Core.DTOs.JoggingTimesDto;
 using Jogging_Times.Core.Models;
 using Jogging_Times.Core.Services;
@@ -7,21 +8,23 @@ using JoggingTimes.Infrastructure.DataContext;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Jogging_Times.Infrastructure.Services
+namespace JoggingTimes.Infrastructure.Services
 {
-    public class JoggingTimeService : IJoggingTimeService
+    public class JoggingTimeManagementService:IjoggingTimeManagementService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public JoggingTimeService(ApplicationDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager,
+        public JoggingTimeManagementService(ApplicationDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager,
             IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -30,12 +33,10 @@ namespace Jogging_Times.Infrastructure.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IEnumerable<JoggingTimeDetailsDto>> GetJoggingTimesAsync()
+        public async Task<IEnumerable<JoggingTimeDetailsDto>> GetJoggingTimesAsync(string userId)
         {
-            var currentUserId = GetCurrentUserId();
-
             var joggingTimes = await _context.JoggingTimes
-                .Where(j => j.UserId == currentUserId)
+                .Where(j => j.UserId == userId)
                 .OrderByDescending(x => x.Date)
                 .ToListAsync();
 
@@ -44,13 +45,11 @@ namespace Jogging_Times.Infrastructure.Services
             return JoggingTimeDto;
         }
 
-        public async Task<IEnumerable<JoggingTimeDetailsDto>> FilterJoggingTimeAsync(FilterJoggingTimeDto filterTime)
+        public async Task<IEnumerable<JoggingTimeDetailsDto>> FilterJoggingTimeAsync(FilterJoggingTimeManagementDto filterTime)
         {
-            var userId = GetCurrentUserId();
-
             var joggingTimeFilteration = await _context.JoggingTimes
                 .AsNoTracking()
-                .Where(j => j.UserId == userId &&
+                .Where(j => j.UserId == filterTime.UserId &&
                             j.Date >= filterTime.FromDate.Value.Date &&
                             j.Date <= filterTime.ToDate.Value.Date)
                 .ToListAsync();
@@ -59,12 +58,10 @@ namespace Jogging_Times.Infrastructure.Services
             return joggingTimeDetailsDto;
         }
 
-        public WeeklyAverageDto AverageCaculationReport(FilterJoggingTimeDto filterTime)
+        public WeeklyAverageDto AverageCaculationReport(FilterJoggingTimeManagementDto filterTime)
         {
-            var userId = GetCurrentUserId();
-
             var joggingTime = _context.JoggingTimes
-                .Where(j => j.UserId == userId &&
+                .Where(j => j.UserId == filterTime.UserId &&
                        j.Date >= filterTime.FromDate.Value.Date &&
                        j.Date <= filterTime.ToDate.Value.Date);
 
@@ -78,15 +75,17 @@ namespace Jogging_Times.Infrastructure.Services
             return average;
         }
 
-        public async Task<JoggingTimeDetailsDto> CreateJoggingAsync(JoggingTimeDto joggingTimeDto)
+        public async Task<JoggingTimeDetailsDto> CreateJoggingAsync(JoggingTimeManagementDto joggingTimeDto)
         {
             if (joggingTimeDto is null)
                 new JoggingTimeDetailsDto { Message = ResponseMessage.JoggingNullErrorMessage };
 
-            var userId = GetCurrentUserId();
+            var userExist = await GetUser(joggingTimeDto.UserId);
+
+            if (!userExist)
+                return new JoggingTimeDetailsDto { Message = ResponseMessage.UserNotFoundMessage };
 
             var joggingTime = _mapper.Map<JoggingTime>(joggingTimeDto);
-            joggingTime.UserId += userId;
 
             await _context.JoggingTimes.AddAsync(joggingTime);
             await _context.SaveChangesAsync();
@@ -97,7 +96,7 @@ namespace Jogging_Times.Infrastructure.Services
             return joggingTimeDetailsDto;
         }
 
-        public async Task<JoggingTimeDetailsDto> UpdateJoggingAsync(UpdateJoggingTimeDto updatejoggingTimeDto)
+        public async Task<JoggingTimeDetailsDto> UpdateJoggingAsync(UpdateJoggingTimeManagementDto updatejoggingTimeDto)
         {
             if (updatejoggingTimeDto.Id <= 0)
                 return new JoggingTimeDetailsDto { Message = ResponseMessage.joggingNotFoundMessage };
@@ -107,9 +106,12 @@ namespace Jogging_Times.Infrastructure.Services
             if (joggingTimeExist is null)
                 return new JoggingTimeDetailsDto { Message = ResponseMessage.joggingNotFoundMessage };
 
+            var userExist = await GetUser(updatejoggingTimeDto.UserId);
+
+            if (!userExist)
+                return new JoggingTimeDetailsDto { Message = ResponseMessage.UserNotFoundMessage };
+
             var joggingTime = _mapper.Map<JoggingTime>(updatejoggingTimeDto);
-            
-            joggingTime.UserId += GetCurrentUserId();
 
             _context.Entry(joggingTimeExist).CurrentValues.SetValues(joggingTime);
 
@@ -124,17 +126,22 @@ namespace Jogging_Times.Infrastructure.Services
         {
             var joggingTime = await _context.JoggingTimes.FindAsync(joggingTimeId);
 
-            var userId = GetCurrentUserId();
-
             if (joggingTime is null)
                 return new JoggingTimeDetailsDto { Message = ResponseMessage.joggingNotFoundMessage };
-
-            if (userId != joggingTime.UserId)
-                return new JoggingTimeDetailsDto { Message = ResponseMessage.DeleteJoggingtoanotheruserErrorMessage };
 
             _context.JoggingTimes.Remove(joggingTime);
             await _context.SaveChangesAsync();
             return new JoggingTimeDetailsDto { Message = ResponseMessage.JoggingTimeDeletedMessage };
+        }
+
+        private async Task<bool> GetUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return false;
+
+            return true;
         }
 
         private string GetCurrentUserId()

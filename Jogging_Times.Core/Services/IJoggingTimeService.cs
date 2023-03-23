@@ -6,7 +6,7 @@ namespace Jogging_Times.Core.Services
 {
     public interface IJoggingTimeService
     {
-        Task<IEnumerable<JoggingTimeDetailsDto>> GetJoggingTimesAsync(string userId);
+        Task<IEnumerable<JoggingTimeDetailsDto>> GetJoggingTimesAsync();
         Task<IEnumerable<JoggingTimeDetailsDto>> FilterJoggingTimeAsync(FilterJoggingTimeDto filterTime);
         Task<JoggingTimeDetailsDto> CreateJoggingAsync(JoggingTimeDto joggingTimeDto);
         Task<JoggingTimeDetailsDto> UpdateJoggingAsync(UpdateJoggingTimeDto joggingTime);

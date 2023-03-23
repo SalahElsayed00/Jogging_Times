@@ -6,6 +6,7 @@ using Jogging_Times.Core.Services;
 using Jogging_Times.Core.Validation;
 using Jogging_Times.Infrastructure.Services;
 using JoggingTimes.Infrastructure.DataContext;
+using JoggingTimes.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IJoggingTimeService, JoggingTimeService>();
+builder.Services.AddScoped<IjoggingTimeManagementService, JoggingTimeManagementService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 

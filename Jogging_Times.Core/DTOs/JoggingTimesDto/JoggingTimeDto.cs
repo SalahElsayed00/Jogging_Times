@@ -11,6 +11,5 @@ namespace Jogging_Times.Core.DTOs.JoggingTimesDto
         public string? Date { get; set; }
         public string? Distance { get; set; }
         public string? Time { get; set; }
-        public string? UserId { get; set; }
     }
 }
